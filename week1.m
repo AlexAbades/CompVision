@@ -148,26 +148,161 @@ L=length_SB(F1);
 
 
 %% CURVE SMOOTHING
+
+% Load the txt of coordinates.
 X= load('curves/dino_noisy.txt');
-%L matriz
+D = load('curves/dino.txt');
+
+% Check the image
+figure
+plot(D(:,1), D(:,2), 'green')
+hold on 
+plot(X(:,1), X(:,2), 'red')
+legend('Dino', 'Dino Noisy')
+title('Dinos')
+hold off
+axis equal
+
+% Extract the dimensions of our matrix given the coordinates.
 [m,~] = size(X);
 
-L=zeros(m,m);
-u=ones(1,m);
-L=diag(u)*-2;
+% Create the L matrix with diafgonal [1 2 1] and corners upper right and
+% lower left equal 1.
+
+% Identity matrix.
+I=eye(m);
+% Matrix (n,n) with diagonal with value -2.
+L=I*-2;
+% Matrix with uper diagonal with values 1.
 M = diag(ones(1,m-1),1);
+% Matrix with lower diagonal with values equal 1.
 M1= diag(ones(1,m-1),-1);
+% Sum all matrices to obtain L matrix.
 L=L+M+M1;
+% Replace the lower left and upper right corners with 1.
 L(m,1)=1;L(1,m)=1;
 
-
-I=eye(m);
+% Assign a value for lambda:
 lambda=0.5;
 
-X_new=(I-lambda.*L).*X;
+% Calculate the new curve smooth with the average value of the neighbours.
+X_new=(I+lambda*L)*X;
+
+% Plot the result against the original
+figure()
+plot(D(:,1), D(:,2), 'green')
+hold on 
+plot(X_new(:,1), X_new(:,2), 'blue')
+hold on
+plot(X(:,1), X(:,2), 'red')
+hold on 
+legend('Dino', 'Dino 1st curve smooth', 'Noisy Dino')
+axis equal
+title('Dinos smoothness')
+hold off 
+
+% Check different lambdas
+lambdas = 0.1:0.1:1;
+
+for i=1:length(lambdas)
+    X_temp = (I+lambdas(i)*L)*X;
+    
+    str = sprintf('lambda value: %u', lambdas(i));
+    plot(X_temp(:,1), X_temp(:,2), 'DisplayName', str)
+    hold on 
+    
+
+end
+hold off 
+legend show
+axis equal
+title('Checking different values of lambda')
 
 
 
+% Iterate with small values of lambda:
+lambda = 0.1;
+k = 100;
+X_temp = X;
+figure()
 
+for i=1:k
+    X_temp = (I+lambda*L)*X_temp;
+    if ~mod(i,10)
+        str = sprintf('Iteration number: %u', i);
+        plot(X_temp(:,1), X_temp(:,2), 'DisplayName', str)
+        hold on 
+    end
+
+end
+hold off 
+legend show
+title('Iterating 100 times')
+
+
+%% Implicit smothing (avoiding iteration) 
+lambda = 5;
+X_imp = (I-lambda*L)\X; % \ operator same as the inv()
+
+% Plot the results 
+figure
+plot(D(:,1), D(:,2), 'green')
+hold on 
+plot(X_imp(:,1), X_imp(:,2), 'red')
+legend('Dino', 'Dino Noisy')
+title('Dinos')
+hold off
+
+
+% We can see that for large values of lambda the result is the same as if
+% we were iterating many times we also loose some information due to the
+% shrinkage of the curve.
+
+
+%% Elasticity and rigidity:
+
+% Elasticity cte
+alpha = 1;
+% Rigidity cte 
+beta = 1;
+
+% Create the matrix A 
+A = L;
+
+% Create the B matrix 
+B = L + eye(m)*-4;
+
+% Calculate the new curve smooth
+X_er = (I-alpha*A - beta*B)\X;
+
+figure()
+plot(X_er(:,1), X_er(:,2))
+hold on 
+
+
+%% Function implementet without the posibility of changeing A and B matrices 
+
+
+Y = smooothing(X, 2, 1);
+P = smooothing(X, 2, 1, [0 1 -2], [0 1 -6]);
+figure()
+plot(X_er(:,1), X_er(:,2))
+hold on 
+plot(Y(:,1), Y(:,2))
+plot(P(:,1), P(:,2), 'm') % It seems to be an error at the code, cause the 
+% plot shows different results, but only at the end of the line. 
+
+%% Probes to implement it
+
+m = 6;
+A = [0 1 2 3];
+G = zeros(m,m);
+
+for i=length(A):-1:1
+    cont = length(A)-i;
+    G = G + diag(ones(m-cont,1),-cont)*A(i);
+end
+
+G = triu(G.',1) + tril(G)
 
 
