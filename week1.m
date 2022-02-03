@@ -5,9 +5,9 @@ I= mat2gray(imread('fibres_xcth.png'));
 %Filters
 x=[-1 0 1];
 y=[-1 0 1]';
-h1=(1/sqrt(2*pi))*exp(-x.^2/2); 
 
-h2=(1/(2*pi))*exp(-(x.^2+y.^2)/2);
+h1=Gaussian(1,1);
+h2=Gaussian(1,2);
 
 
 g2=imfilter(I,h2); %2D
@@ -51,8 +51,9 @@ Id=imfilter(I,d);
  
 g3= imfilter(Id,h1);
 
+sigma=1;
+d_h1=Derivative_Gaussian(sigma);
 
-d_h1=(-x/sqrt(2*pi)).*exp(-x.^2/2);
 
 g4=imfilter(I,d_h1);
 
@@ -78,13 +79,13 @@ title('Difference')
 
 %% Semigroup structures
 
-sigma1=20;
+sigma1=20;    
 
-h5 = (1/(2*sigma1*pi))*exp(-(x.^2+y.^2)/2*sigma1);
+h5 = Gaussian(sigma1,2);
 g5=imfilter(I,h5);
 
 sigma2=2;
-h6 = (1/(2*sigma2*pi))*exp(-(x.^2+y.^2)/2*sigma2);
+h6= Gaussian(sigma2,2);
 g6=imfilter(h6,h6);
 
 for i=1:8
@@ -92,7 +93,6 @@ for i=1:8
 end
 
 g7=imfilter(I,g6);
-
 
 figure(3)
 subplot(1,2,1)
@@ -107,6 +107,35 @@ colormap(gray)
 colorbar
 title('t=2 x 10')
 
+%%  Large Gaussian derivative vs
+
+%Large derivative Gaussian
+sigma=20;
+h8=Derivative_Gaussian(sigma);
+g8=imfilter(I,h8);
+
+
+%Gaussian with t = 10 and a Gaussian derivative with t = 10
+sigma=10;
+h9=Gaussian(sigma,2);
+g9=imfilter(I,h8);
+
+h10=Derivative_Gaussian(sigma);
+g10=imfilter(g9,h10);
+
+
+figure(3)
+subplot(1,2,1)
+imagesc(g8)
+colormap(gray)
+colorbar
+title('Large derivative Gaussian,t=20')
+
+subplot(1,2,2)
+imagesc(g10)
+colormap(gray)
+colorbar
+title('Gaussian+Gaussian derivative,t = 10')
 
 
 
