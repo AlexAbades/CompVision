@@ -1,5 +1,5 @@
 
-%IMAGE CONVOLUTION
+%% IMAGE CONVOLUTION
 I= mat2gray(imread('fibres_xcth.png'));
 
 %Filters
@@ -136,6 +136,36 @@ imagesc(g10)
 colormap(gray)
 colorbar
 title('Gaussian+Gaussian derivative,t = 10')
+
+
+%% SEGMENTATION BOUNDARY
+
+F1= imread('fuel_cells/fuel_cell_1.tif');
+
+L=length_SB(F1);
+
+
+
+
+%% CURVE SMOOTHING
+X= load('curves/dino_noisy.txt');
+%L matriz
+[m,~] = size(X);
+
+L=zeros(m,m);
+u=ones(1,m);
+L=diag(u)*-2;
+M = diag(ones(1,m-1),1);
+M1= diag(ones(1,m-1),-1);
+L=L+M+M1;
+L(m,1)=1;L(1,m)=1;
+
+
+I=eye(m);
+lambda=0.5;
+
+X_new=(I-lambda.*L).*X;
+
 
 
 
