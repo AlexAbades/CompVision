@@ -49,6 +49,8 @@ elseif nargin == 4
     
     % Make the matrix symetric
     A = triu(A.',1) + tril(A);
+    A(m,1)=1;
+    A(1,m)=1;
     
 
     % Matrix B by default
@@ -69,6 +71,8 @@ elseif nargin == 5
         A = A + diag(ones(m-cont,1),-cont)*a(i);
     end
     A = triu(A.',1) + tril(A);
+    A(m,1)=1;
+    A(1,m)=1;
 
     % Matrix B
     B = zeros(m,m);
@@ -77,6 +81,8 @@ elseif nargin == 5
         B = B + diag(ones(m-cont,1),-cont)*b(i);
     end
     B = triu(B.',1) + tril(B);
+    B(m,1)=1;
+    B(1,m)=1;
 
 end
 
