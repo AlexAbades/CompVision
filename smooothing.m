@@ -1,5 +1,5 @@
 function [X_final] = smooothing(X,alpha, beta, a, b)
-%SMOOTHING implicit smoothing with the extended kernel.
+%SMOOTHING: implicit smoothing with the extended kernel.
 %   X is the coordinate matrix, matrix that stores the coordinates of the
 %   line (x,y)
 %   alpha: Elasticity variable

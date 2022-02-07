@@ -1,5 +1,25 @@
+%% CHECKING GRAPHS: 
+sig = 4.5;
+s = 3*sig;
 
-%% IMAGE CONVOLUTION
+x = [-20];
+for i=1:0.2:20
+    x(end + 1) =  (-20+i);
+end
+for i=1:0.2:20
+    x(end+1) = i;
+end
+
+g = Gaussian(sig, 1, x);
+
+figure()
+plot(x,g)
+
+% h = (1/sig*sqrt(2*pi)).*exp(-x.^2/2*sigma.^2);
+% NOT EQUAL AS IN THE BOOK 
+
+
+%% IMAGE CONVOLUTION: Gaussian
 I= mat2gray(imread('fibres_xcth.png'));
 
 %Filters
@@ -42,9 +62,10 @@ colorbar
 title('2D kernel vs. 1D kernel')
 
 
-%%
-%derivative of the image
-%We are taking into account a variance of 1
+%% Image Convolution: Gaussian Derivative 
+% Check the comutative property: First make the derivative of the image
+% times the kernel
+% Variance: 1
 
 d=[0.5 0 -0.5];
 Id=imfilter(I,d); 
@@ -107,7 +128,7 @@ colormap(gray)
 colorbar
 title('t=2 x 10')
 
-%%  Large Gaussian derivative vs
+%%  Large Gaussian derivative vs cumulative of small Gaussian
 
 %Large derivative Gaussian
 sigma=20;
@@ -280,7 +301,7 @@ plot(X_er(:,1), X_er(:,2))
 hold on 
 
 
-%% Function implementet without the posibility of changeing A and B matrices 
+%% Function implementet with the posibility of changeing A and B matrices 
 
 
 Y = smooothing(X, 2, 1);
@@ -292,17 +313,62 @@ plot(Y(:,1), Y(:,2))
 plot(P(:,1), P(:,2), 'm') % It seems to be an error at the code, cause the 
 % plot shows different results, but only at the end of the line. 
 
-%% Probes to implement it
+%% Quiz 1: Exercise 1
 
-m = 6;
-A = [0 1 2 3];
-G = zeros(m,m);
+% Read and show Image 
+I= mat2gray(imread('noisy_number.png'));
+figure()
+imshow(I)
 
-for i=length(A):-1:1
-    cont = length(A)-i;
-    G = G + diag(ones(m-cont,1),-cont)*A(i);
+% Create a 2D Gaussian Kernel
+
+% Create 2 vectors x and y
+sigma = 10;
+x = [-1 0 1]; % Does the extended version follow the binomial? 
+
+n1 = ceil(sqrt(sigma));
+n2 = ceil(sigma/n1);
+
+figure()
+for i=1:sigma
+    k = Gaussian(i,2,x);
+    n = imfilter(I,k);
+    subplot(n1,n2,i)
+    imagesc(n)
+    colormap('gray')
 end
 
-G = triu(G.',1) + tril(G)
+%% Quiz 1: Exercise 2
+
+F1= imread('fuel_cells/fuel_cell_1.tif');
+
+L=length_SB(F1);
+
+%% %% Quiz 1: Exercise 3
+
+% Load the txt of coordinates.
+X= load('curves/dino_noisy.txt');
+D = load('curves/dino.txt');
+
+% Extract the dimensions of our matrix given the coordinates.
+[m,~] = size(X);
+
+% Create the L matrix with diafgonal [1 2 1] and corners upper right and
+% lower left equal 1.
+
+I=eye(m);
+L=I*-2;
+M = diag(ones(1,m-1),1);
+M1= diag(ones(1,m-1),-1);
+L=L+M+M1;
+L(m,1)=1;L(1,m)=1;
+
+% Assign a value for lambda:
+lambda=0.25;
+
+% Calculate the new curve smooth with the average value of the neighbours.
+X_new=(I+lambda*L)*X; % Coordinates 
+
+curveLength = sum(vecnorm(diff(X_new),2,2));
 
 
