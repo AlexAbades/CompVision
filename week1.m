@@ -375,5 +375,44 @@ X_new=(I+lambda*L)*X; % Coordinates
 
 curveLength = sum(vecnorm(diff(X_new),2,2));
 
-%% OPTIONAL
+%% OPTIONAL: Total variation 
+% We're intersted on calculating the amount of total variation of an image
+% applied with the kernel and the original.
+
+I = mat2gray(imread('fibres_xcth.png'));
+
+s = smoothness(I);
+
+sig = 1;
+f = Gaussian(sig,2);
+I_f = imfilter(I, f);
+
+s_f = smoothness(I_f);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
