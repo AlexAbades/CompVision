@@ -47,7 +47,8 @@ elseif nargin == 4
         A = A + diag(ones(m-cont,1),-cont)*a(i);
     end
     
-    % Make the matrix symetric
+    % Make the matrix symetric (tril/triu: upper and lower triangular part
+    % of the matrix). 
     A = triu(A.',1) + tril(A);
     A(m,1)=1;
     A(1,m)=1;

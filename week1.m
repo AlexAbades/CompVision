@@ -375,4 +375,5 @@ X_new=(I+lambda*L)*X; % Coordinates
 
 curveLength = sum(vecnorm(diff(X_new),2,2));
 
+%% OPTIONAL
 
