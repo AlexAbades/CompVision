@@ -416,3 +416,26 @@ s_f = smoothness(I_f);
 
 
 
+
+I= mat2gray(imread('fibres_xcth.png'));
+
+X= sum(sum(abs(diff(I,1,2))));
+Y= sum(sum(abs(diff(I,2,1))));
+tot=X+Y;
+
+h=Gaussian(1,2); %2D
+g2=imfilter(I,h); %2D
+
+
+X2= sum(sum(abs(diff(g2,1,2))));
+Y2= sum(sum(abs(diff(g2,2,1))));
+tot2=X2+Y2;
+
+
+%%
+I= mat2gray(imread('dental/slice209.png'));
+
+imshow(I)
+
+
+
